@@ -171,7 +171,7 @@ DIMENSIONS = {
 # Flip to True once the entity types exist (biomes may only reference registered entities).
 WITH_ENTITIES = False
 # Dimension -> chunk generator style. "blank" is the flat checkpoint-1 test floor.
-STYLES = {"level_0": "blank", "poolrooms": "poolrooms", "carpark": "carpark"}
+STYLES = {"level_0": "level_0", "poolrooms": "poolrooms", "carpark": "carpark"}
 ENABLED_DIMENSIONS = ["level_0"]
 
 

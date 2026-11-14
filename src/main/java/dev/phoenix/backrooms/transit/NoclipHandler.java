@@ -47,11 +47,13 @@ public final class NoclipHandler {
 			return;
 		}
 		state.ticks++;
-		Vec3 at = wall.getLocation();
+		// just in front of the wall face, so the sparks are not hidden inside the block
+		Vec3 at = wall.getLocation().add(Vec3.atLowerCornerOf(wall.getDirection().getUnitVec3i()).scale(0.08));
 		if (state.ticks >= TELL_AFTER_TICKS) {
-			if (state.ticks % 4 == 0) {
-				level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 3, 0.25, 0.25, 0.25, 0.02);
-				level.sendParticles(ParticleTypes.WHITE_ASH, at.x, at.y, at.z, 6, 0.4, 0.4, 0.4, 0.0);
+			if (state.ticks % 2 == 0) {
+				// forced + always-visible so the tell still shows on "minimal" particle settings
+				level.sendParticles(ParticleTypes.ELECTRIC_SPARK, true, true, at.x, at.y, at.z, 8, 0.45, 0.45, 0.45, 0.05);
+				level.sendParticles(ParticleTypes.WHITE_ASH, true, true, at.x, at.y, at.z, 10, 0.5, 0.5, 0.5, 0.0);
 			}
 			if ((state.ticks - TELL_AFTER_TICKS) % 50 == 0) {
 				level.playSound(null, at.x, at.y, at.z, ModSounds.NOCLIP_HUM, SoundSource.AMBIENT, 0.9F, 1.0F);
