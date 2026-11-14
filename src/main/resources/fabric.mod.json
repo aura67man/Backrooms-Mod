@@ -1,0 +1,19 @@
+{
+	"schemaVersion": 1,
+	"id": "backrooms",
+	"version": "${version}",
+	"name": "Backrooms: Thresholds",
+	"description": "Three original liminal dimensions, four ways in, and two things that live there.",
+	"authors": ["Phoenix"],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["dev.phoenix.backrooms.Backrooms"]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.0",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

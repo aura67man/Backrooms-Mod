@@ -1,0 +1,98 @@
+{
+  "ambient.level_0": {
+    "sounds": [
+      {
+        "name": "backrooms:ambient/level_0",
+        "stream": true
+      }
+    ]
+  },
+  "ambient.poolrooms": {
+    "sounds": [
+      {
+        "name": "backrooms:ambient/poolrooms",
+        "stream": true
+      }
+    ]
+  },
+  "ambient.carpark": {
+    "sounds": [
+      {
+        "name": "backrooms:ambient/carpark",
+        "stream": true
+      }
+    ]
+  },
+  "block.fluorescent_light.buzz": {
+    "sounds": [
+      "backrooms:block/light_buzz"
+    ],
+    "subtitle": "subtitles.backrooms.block.fluorescent_light.buzz"
+  },
+  "entity.fixture.ambient": {
+    "sounds": [
+      "backrooms:entity/fixture_ambient"
+    ],
+    "subtitle": "subtitles.backrooms.entity.fixture.ambient"
+  },
+  "entity.fixture.step": {
+    "sounds": [
+      "backrooms:entity/fixture_step"
+    ],
+    "subtitle": "subtitles.backrooms.entity.fixture.step"
+  },
+  "entity.fixture.attack": {
+    "sounds": [
+      "backrooms:entity/fixture_attack"
+    ],
+    "subtitle": "subtitles.backrooms.entity.fixture.attack"
+  },
+  "entity.fixture.hurt": {
+    "sounds": [
+      "backrooms:entity/fixture_hurt"
+    ],
+    "subtitle": "subtitles.backrooms.entity.fixture.hurt"
+  },
+  "entity.fixture.death": {
+    "sounds": [
+      "backrooms:entity/fixture_death"
+    ],
+    "subtitle": "subtitles.backrooms.entity.fixture.death"
+  },
+  "entity.tube_moth.ambient": {
+    "sounds": [
+      "backrooms:entity/moth_flutter"
+    ],
+    "subtitle": "subtitles.backrooms.entity.tube_moth.ambient"
+  },
+  "entity.tube_moth.hurt": {
+    "sounds": [
+      "backrooms:entity/moth_hurt"
+    ],
+    "subtitle": "subtitles.backrooms.entity.tube_moth.hurt"
+  },
+  "entity.tube_moth.death": {
+    "sounds": [
+      "backrooms:entity/moth_death"
+    ],
+    "subtitle": "subtitles.backrooms.entity.tube_moth.death"
+  },
+  "event.noclip_hum": {
+    "sounds": [
+      "backrooms:event/noclip_hum"
+    ],
+    "subtitle": "subtitles.backrooms.event.noclip_hum"
+  },
+  "event.transit": {
+    "sounds": [
+      "backrooms:event/transit"
+    ],
+    "subtitle": "subtitles.backrooms.event.transit"
+  },
+  "item.key_fob.beep": {
+    "sounds": [
+      "backrooms:item/key_fob_beep"
+    ],
+    "subtitle": "subtitles.backrooms.item.key_fob.beep"
+  }
+}

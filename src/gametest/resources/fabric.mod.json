@@ -1,0 +1,14 @@
+{
+	"schemaVersion": 1,
+	"id": "backrooms-test",
+	"version": "1.0.0",
+	"name": "Backrooms automated playtest",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-client-gametest": ["dev.phoenix.backrooms.test.BackroomsClientGameTest"]
+	},
+	"mixins": ["backrooms-test.mixins.json"],
+	"depends": {
+		"backrooms": "*"
+	}
+}

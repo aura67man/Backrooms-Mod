@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "backrooms:block/garage_line"
+    },
+    "axis=y": {
+      "model": "backrooms:block/garage_line"
+    },
+    "axis=x": {
+      "model": "backrooms:block/garage_line",
+      "y": 90
+    }
+  }
+}
