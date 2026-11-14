@@ -6,6 +6,7 @@ import dev.phoenix.backrooms.registry.ModItems;
 import dev.phoenix.backrooms.registry.ModSounds;
 import dev.phoenix.backrooms.transit.NoclipHandler;
 import dev.phoenix.backrooms.transit.Transit;
+import dev.phoenix.backrooms.transit.VoidFallHandler;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ public class Backrooms implements ModInitializer {
 		ModDimensions.init();
 		Transit.init();
 		NoclipHandler.init();
+		VoidFallHandler.init();
 		LOGGER.info("Backrooms: Thresholds initialised");
 	}
 }

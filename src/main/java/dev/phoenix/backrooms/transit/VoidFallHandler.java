@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class VoidFallHandler {
 	private static final int TELL_BELOW_Y = 0;
-	private static final int CATCH_BELOW_Y = -32;
+	private static final int CATCH_BELOW_Y = -48;
 
 	public static void init() {
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -34,7 +34,9 @@ public final class VoidFallHandler {
 	private static void tick(ServerPlayer player) {
 		ServerLevel level = player.level();
 		if (player.getY() >= CATCH_BELOW_Y) {
-			level.sendParticles(ParticleTypes.FALLING_WATER, player.getX(), player.getY() - 2.0, player.getZ(), 12, 1.5, 2.0, 1.5, 0.0);
+			// spawned well below the player (and forced visible) so they streak past as you fall
+			level.sendParticles(ParticleTypes.FALLING_WATER, true, true, player.getX(), player.getY() - 8.0, player.getZ(), 40, 2.0, 4.0, 2.0, 0.0);
+			level.sendParticles(ParticleTypes.BUBBLE_POP, true, true, player.getX(), player.getY() - 8.0, player.getZ(), 20, 2.0, 4.0, 2.0, 0.0);
 			if (player.tickCount % 15 == 0) {
 				level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.AMBIENT_POOLROOMS, SoundSource.AMBIENT, 0.7F, 1.0F);
 			}
@@ -44,8 +46,8 @@ public final class VoidFallHandler {
 		Layout layout = poolrooms == null ? null : ModDimensions.layoutOf(poolrooms);
 		if (layout instanceof PoolroomsLayout pools) {
 			BlockPos above = pools.findDeepPool(player.getBlockX(), player.getBlockZ());
-			// coming home from here would be straight back into the void, so "home" is the End's arrival platform
-			Transit.enterAt(player, poolrooms, Vec3.atBottomCenterOf(above), ServerLevel.END_SPAWN_POINT);
+			// there is nowhere sensible to come back to in the void, so the exit will lead to the respawn point
+			Transit.enterWithoutReturn(player, poolrooms, Vec3.atBottomCenterOf(above));
 		}
 	}
 

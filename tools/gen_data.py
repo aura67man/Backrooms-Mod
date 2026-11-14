@@ -172,7 +172,7 @@ DIMENSIONS = {
 WITH_ENTITIES = False
 # Dimension -> chunk generator style. "blank" is the flat checkpoint-1 test floor.
 STYLES = {"level_0": "level_0", "poolrooms": "poolrooms", "carpark": "carpark"}
-ENABLED_DIMENSIONS = ["level_0"]
+ENABLED_DIMENSIONS = ["level_0", "poolrooms", "carpark"]
 
 
 def dimensions():
@@ -217,12 +217,25 @@ def dimensions():
             "has_precipitation": False, "temperature": 0.5})
 
 
+def features():
+    """The hidden Overworld structure. Roughly one attempt per 250 chunks."""
+    write(DATA, "worldgen/feature/wrong_stairwell.json", {"type": f"{MOD}:wrong_stairwell"})
+    write(DATA, "worldgen/placed_feature/wrong_stairwell.json", {
+        "feature": f"{MOD}:wrong_stairwell",
+        "placement": [
+            {"type": "minecraft:rarity_filter", "chance": 250},
+            {"type": "minecraft:in_square"},
+            {"type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG"},
+            {"type": "minecraft:biome"}]})
+
+
 def main():
     block_assets()
     item_assets()
     loot_and_tags()
     sounds_and_lang()
     dimensions()
+    features()
     print("data + asset JSON written")
 
 

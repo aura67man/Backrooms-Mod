@@ -19,6 +19,8 @@ public abstract class Layout {
 		return switch (style) {
 			case "blank" -> new BlankLayout();
 			case "level_0" -> new Level0Layout();
+			case "poolrooms" -> new PoolroomsLayout();
+			case "carpark" -> new CarparkLayout();
 			default -> throw new IllegalArgumentException("Unknown liminal style: " + style);
 		};
 	}

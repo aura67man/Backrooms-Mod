@@ -13,11 +13,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
 /** Moves players between the real world and the liminal levels, remembering the way home. */
@@ -63,19 +63,22 @@ public final class Transit {
 		return true;
 	}
 
-	/** Send the player back to where they came from (or world spawn if that is unknown). */
+	/** Arrive somewhere with no way back recorded: the exit will lead to the player's respawn point instead. */
+	public static void enterWithoutReturn(ServerPlayer player, ServerLevel destination, Vec3 position) {
+		player.removeAttached(RETURN_POS);
+		move(player, destination, position);
+	}
+
+	/** Send the player back to where they came from, or to their respawn point if that is unknown. */
 	public static void leave(ServerPlayer player) {
-		MinecraftServer server = player.level().getServer();
 		GlobalPos home = player.removeAttached(RETURN_POS);
-		ServerLevel destination = home == null ? null : server.getLevel(home.dimension());
-		if (destination == null) {
-			home = server.getRespawnData().globalPos();
-			destination = server.getLevel(home.dimension());
-			if (destination == null) {
-				destination = server.overworld();
-			}
+		ServerLevel destination = home == null ? null : player.level().getServer().getLevel(home.dimension());
+		if (destination != null) {
+			move(player, destination, Vec3.atBottomCenterOf(home.pos()));
+			return;
 		}
-		move(player, destination, Vec3.atBottomCenterOf(home.pos()));
+		TeleportTransition respawn = player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
+		move(player, respawn.newLevel(), respawn.position());
 	}
 
 	private static void move(ServerPlayer player, ServerLevel destination, Vec3 position) {
