@@ -7,7 +7,7 @@ The same scripted playthrough runs twice: once in a singleplayer world and once 
 
 ## Sound
 
-243 s of audio captured from the game's OpenAL output (written by OpenAL Soft's wave backend); 197 of 243 seconds are non-silent; peak level 0.64, loudest one-second RMS 0.170.
+238 s of audio captured from the game's OpenAL output (written by OpenAL Soft's wave backend); 193 of 238 seconds are non-silent; peak level 0.76, loudest one-second RMS 0.170.
 
 `SOUND` lines below are logged by a listener on the client's sound engine the first time each of the mod's sound events is actually played.
 
@@ -107,7 +107,7 @@ PASS       client played sound backrooms:entity.fixture.ambient
 PASS       client played sound backrooms:entity.fixture.hurt
 PASS       client played sound backrooms:entity.fixture.death
 SOUND      client played backrooms:entity.tube_moth.ambient
-PASS       singleplayer: Tube Moth flew 11.31 blocks in 6s, up to y=36.56
+PASS       singleplayer: Tube Moth flew 10.76 blocks in 6s, up to y=36.26
 PASS       singleplayer: Tube Moth ignored the player while left alone (no target, player health 20.0)
 SOUND      client played backrooms:entity.tube_moth.hurt
 PASS       singleplayer: Tube Moth targeted the player after being hit
@@ -116,7 +116,7 @@ SOUND      client played backrooms:entity.tube_moth.death
 PASS       client played sound backrooms:entity.tube_moth.ambient
 PASS       client played sound backrooms:entity.tube_moth.hurt
 PASS       client played sound backrooms:entity.tube_moth.death
-PASS       singleplayer: natural spawning in Level 0 produced 5 Fixture(s) and 18 Tube Moth(s)
+PASS       singleplayer: natural spawning in Level 0 produced 4 Fixture(s) and 16 Tube Moth(s)
 PASS       singleplayer: config toggles removed every Fixture and Tube Moth and stopped new spawns
 PASS       SINGLEPLAYER PLAYTHROUGH COMPLETE
 PASS       dedicated server started and client connected
@@ -188,7 +188,7 @@ PASS       client played sound backrooms:entity.fixture.ambient
 PASS       client played sound backrooms:entity.fixture.hurt
 PASS       client played sound backrooms:entity.fixture.death
 SOUND      client played backrooms:entity.tube_moth.ambient
-PASS       dedicated: Tube Moth flew 8.31 blocks in 6s, up to y=34.90
+PASS       dedicated: Tube Moth flew 8.28 blocks in 6s, up to y=35.73
 PASS       dedicated: Tube Moth ignored the player while left alone (no target, player health 20.0)
 SOUND      client played backrooms:entity.tube_moth.hurt
 PASS       dedicated: Tube Moth targeted the player after being hit
@@ -197,7 +197,7 @@ SOUND      client played backrooms:entity.tube_moth.death
 PASS       client played sound backrooms:entity.tube_moth.ambient
 PASS       client played sound backrooms:entity.tube_moth.hurt
 PASS       client played sound backrooms:entity.tube_moth.death
-PASS       dedicated: natural spawning in Level 0 produced 8 Fixture(s) and 17 Tube Moth(s)
+PASS       dedicated: natural spawning in Level 0 produced 7 Fixture(s) and 16 Tube Moth(s)
 PASS       dedicated: config toggles removed every Fixture and Tube Moth and stopped new spawns
 PASS       DEDICATED SERVER PLAYTHROUGH COMPLETE
 PASS       ALL CHECKS COMPLETE
@@ -208,15 +208,16 @@ PASS       ALL CHECKS COMPLETE
 None come from the mod. They are vanilla failing to reach Mojang's online services from the offline sandbox, plus one graphics-option message from the software renderer:
 
 ```
+[Download-1/ERROR] (Minecraft) Couldn't connect to realms
+[Download-1/ERROR] (Minecraft) Failed to fetch Realms feature flags
 [Download-2/ERROR] (Minecraft) Couldn't connect to realms
-[Download-2/ERROR] (Minecraft) Failed to fetch Realms feature flags
 [Download-2/ERROR] (Minecraft) Failed to fetch user properties
-[Download-3/ERROR] (Minecraft) Couldn't connect to realms
 [Render thread/ERROR] (Minecraft) Illegal option value 0 for Anisotropic Filtering
 ```
+
 ## Production server smoke test
 
-`tools/smoke_test_server.py` ran the built jar (`build/libs/backrooms-mod-1.0.0.jar`, 389153 bytes, sha256 `d16a10412e9c6c72...`) on a stock Fabric 0.20.1 dedicated server for 26.3 with only Fabric API alongside it.
+`tools/smoke_test_server.py` ran the built jar (`build/libs/backrooms-mod-1.0.0.jar`, 382456 bytes, sha256 `79d1fcfc9fc0663e...`) on a stock Fabric 0.20.1 dedicated server for 26.3 with only Fabric API alongside it.
 
 **156 log lines, 0 ERROR/FATAL lines.** The only warnings are vanilla's offline-mode notices and failed calls to Mojang's online services:
 
@@ -233,10 +234,10 @@ Relevant lines:
 
 ```
 [main/INFO]: Backrooms: Thresholds initialised
-[Server thread/INFO]: Done (2.520s)! For help, type "help"
+[Server thread/INFO]: Done (2.616s)! For help, type "help"
 [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:poolrooms
-[Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:level_0
 [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:carpark
+[Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:level_0
 [Server thread/INFO]: System chat: Marked 16 chunks in backrooms:level_0 from [-2, -2] to [1, 1] to be force loaded
 [Server thread/INFO]: System chat: Test passed
 [Server thread/INFO]: System chat: Summoned new Fixture
@@ -250,6 +251,6 @@ Relevant lines:
 [Server thread/INFO]: System chat: Summoned new Fixture
 [Server thread/INFO]: System chat: Summoned new Tube Moth
 [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:poolrooms
-[Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:level_0
 [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:carpark
+[Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/backrooms:level_0
 ```
