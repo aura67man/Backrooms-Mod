@@ -3,7 +3,7 @@
 An original liminal-spaces mod for **Minecraft Java Edition 26.3** on **Fabric**.
 Three procedurally generated dimensions, four ways in, a way back from each, and two things that live there.
 
-- Jar: `build/libs/backrooms-mod-1.0.0.jar` (run `./gradlew build`)
+- Jar: `dist/backrooms-mod-1.0.0.jar` (the playtested build, committed so it survives), or build your own with `./gradlew build` into `build/libs/`
 - Needs: Minecraft 26.3, Fabric Loader 0.20.1+, Fabric API 0.166.2+26.3, Java 25
 - Install: drop the jar and Fabric API into `mods/`. Works in singleplayer and on dedicated servers (install on both sides).
 
