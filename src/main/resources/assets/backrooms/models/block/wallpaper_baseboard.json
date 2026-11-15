@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "backrooms:block/wallpaper",
+    "side": "backrooms:block/wallpaper_baseboard"
+  }
+}

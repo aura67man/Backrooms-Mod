@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone",
+    "E": "minecraft:ender_pearl"
+  },
+  "pattern": [
+    " N ",
+    "IRI",
+    " E "
+  ],
+  "result": {
+    "id": "backrooms:key_fob"
+  }
+}

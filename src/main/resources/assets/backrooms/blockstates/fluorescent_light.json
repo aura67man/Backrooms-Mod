@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "flickering=true,lit=true": {
+      "model": "backrooms:block/fluorescent_light"
+    },
+    "flickering=false,lit=true": {
+      "model": "backrooms:block/fluorescent_light"
+    },
+    "flickering=true,lit=false": {
+      "model": "backrooms:block/fluorescent_light_off"
+    },
+    "flickering=false,lit=false": {
+      "model": "backrooms:block/fluorescent_light_off"
+    }
+  }
+}

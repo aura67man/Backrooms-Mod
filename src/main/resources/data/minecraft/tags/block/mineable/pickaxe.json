@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "backrooms:wallpaper",
+    "backrooms:ceiling_tile",
+    "backrooms:pool_tile",
+    "backrooms:pool_tile_blue",
+    "backrooms:pool_light",
+    "backrooms:garage_concrete",
+    "backrooms:garage_floor",
+    "backrooms:sodium_lamp",
+    "backrooms:wallpaper_baseboard",
+    "backrooms:hazard_pillar",
+    "backrooms:garage_line",
+    "backrooms:fluorescent_light"
+  ]
+}

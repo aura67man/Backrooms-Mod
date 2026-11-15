@@ -1,0 +1,18 @@
+pluginManagement {
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		// Google's official Maven Central mirror, tried first because repo.maven.apache.org
+		// rate-limits (HTTP 429) some networks. Same artifacts, same checksums.
+		maven {
+			name = 'MavenCentralGoogleMirror'
+			url = 'https://maven-central.storage-download.googleapis.com/maven2/'
+		}
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+rootProject.name = 'backrooms-mod'

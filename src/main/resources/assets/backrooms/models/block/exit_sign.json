@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "backrooms:block/threshold",
+    "side": "backrooms:block/exit_sign"
+  }
+}

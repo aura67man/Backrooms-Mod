@@ -1,0 +1,11 @@
+# local toolchain + caches (kept inside the project on purpose, never committed)
+.jdk25/
+.gradle-home/
+.gradle/
+build/
+run/
+*.log
+__pycache__/
+.idea/
+.vscode/
+*.iml
