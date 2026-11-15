@@ -3,7 +3,26 @@
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},
-        "spawns_by_category": {}
+        "spawns_by_category": {
+          "monster": [
+            {
+              "type": "backrooms:fixture",
+              "count": 1,
+              "weight": 10
+            }
+          ],
+          "ambient": [
+            {
+              "type": "backrooms:tube_moth",
+              "weight": 10,
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 2,
+                "max_inclusive": 4
+              }
+            }
+          ]
+        }
       },
       "modifier": "overlay"
     }

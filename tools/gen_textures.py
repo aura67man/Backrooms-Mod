@@ -291,12 +291,12 @@ def fixture_texture():
         return jitter(c, rng, 4) + (255,)
 
     paint_box(img, 0, 0, 8, 1, 8, metal)       # base
-    paint_box(img, 0, 10, 2, 26, 2, metal)     # pole
-    paint_box(img, 8, 10, 1, 18, 1, arm)       # arms (shared)
+    paint_box(img, 0, 10, 2, 36, 2, metal)     # pole
+    paint_box(img, 8, 10, 1, 22, 1, arm)       # arms (shared)
     paint_box(img, 16, 10, 10, 4, 10, shade)   # lower shade
     paint_box(img, 32, 0, 6, 3, 6, shade)      # upper shade
-    paint_box(img, 0, 40, 2, 2, 2, bulb)       # bulb
-    paint_box(img, 12, 40, 3, 1, 1, arm)       # fingers (shared)
+    paint_box(img, 16, 26, 3, 2, 3, bulb)      # bulb
+    paint_box(img, 16, 32, 3, 1, 1, arm)       # hands (shared)
     return img
 
 

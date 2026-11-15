@@ -2,14 +2,19 @@ package dev.phoenix.backrooms.test;
 
 import dev.phoenix.backrooms.BackroomsConfig;
 import dev.phoenix.backrooms.block.FluorescentLightBlock;
+import dev.phoenix.backrooms.entity.FixtureEntity;
+import dev.phoenix.backrooms.entity.TubeMothEntity;
 import dev.phoenix.backrooms.registry.ModBlocks;
 import dev.phoenix.backrooms.registry.ModDimensions;
 import dev.phoenix.backrooms.world.layout.Layout;
 import java.nio.file.Path;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
+import net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerConnection;
+import net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -17,7 +22,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -38,15 +48,48 @@ public class BackroomsClientGameTest implements FabricClientGameTest {
 				LOG.info("[BRTEST] SOUND client played {}", id);
 			}
 		}));
-		try (TestSingleplayerContext world = context.worldBuilder().create()) {
-			world.getConnection().waitForChunksRender();
-			pass("singleplayer world created");
-			world.getServer().runCommand("gamemode creative @a");
-			levelZero(context, world.getServer(), world.getConnection(), "singleplayer");
-			poolrooms(context, world.getServer(), world.getConnection(), "singleplayer");
-			carpark(context, world.getServer(), world.getConnection(), "singleplayer");
+		// BRTEST_ONLY=entities (or level0, poolrooms, carpark, server) runs a subset while iterating; unset runs everything
+		String only = System.getenv("BRTEST_ONLY");
+		if (only == null || !only.equals("server")) {
+			try (TestSingleplayerContext world = context.worldBuilder().create()) {
+				world.getConnection().waitForChunksRender();
+				pass("singleplayer world created");
+				world.getServer().runCommand("gamemode creative @a");
+				playthrough(context, world.getServer(), world.getConnection(), "singleplayer", only);
+			}
+			pass("SINGLEPLAYER PLAYTHROUGH COMPLETE");
+		}
+		if (only == null || only.equals("server")) {
+			// A real dedicated server (offline mode, flat world) with this client connected to it over the network stack.
+			Properties properties = new Properties();
+			properties.setProperty("level-type", "minecraft:flat");
+			properties.setProperty("online-mode", "false");
+			try (TestDedicatedServerContext server = context.worldBuilder().createServer(properties);
+				TestDedicatedServerConnection connection = server.connect()) {
+				connection.waitForChunksRender();
+				pass("dedicated server started and client connected");
+				server.runCommand("gamemode creative @a");
+				playthrough(context, server, connection, "dedicated", null);
+			}
+			pass("DEDICATED SERVER PLAYTHROUGH COMPLETE");
 		}
 		pass("ALL CHECKS COMPLETE");
+	}
+
+	private void playthrough(ClientGameTestContext context, TestServerContext server, TestServerConnection connection, String mode, String only) {
+		HEARD.clear();
+		if (only == null || only.contains("level0")) {
+			levelZero(context, server, connection, mode);
+		}
+		if (only == null || only.contains("poolrooms")) {
+			poolrooms(context, server, connection, mode);
+		}
+		if (only == null || only.contains("carpark")) {
+			carpark(context, server, connection, mode);
+		}
+		if (only == null || only.contains("entities")) {
+			entities(context, server, connection, mode);
+		}
 	}
 
 	// ------------------------------------------------------------------ checkpoint 2: Level 0 + noclip
@@ -233,6 +276,170 @@ public class BackroomsClientGameTest implements FabricClientGameTest {
 		context.waitFor(mc -> mc.level != null && mc.level.dimension() == ModDimensions.CARPARK, 100);
 		walkThroughExit(context, server, connection, ModDimensions.CARPARK, mode);
 		heard("backrooms:item.key_fob.beep", "backrooms:ambient.carpark");
+	}
+
+	// ------------------------------------------------------------------ checkpoint 5: entities
+	private void entities(ClientGameTestContext context, TestServerContext server, TestServerConnection connection, String mode) {
+		server.runCommand("gamerule spawn_mobs false");
+		server.runCommand("difficulty normal");
+		BlockPos start = server.computeOnServer(s -> findCorridor(ModDimensions.layoutOf(s.getLevel(ModDimensions.LEVEL_0)), 13));
+		double px = start.getX() + 0.5;
+		double pz = start.getZ() + 0.5;
+		float towards = -90; // facing +X, where the entities are summoned
+		float away = 90;
+		teleport(server, ModDimensions.LEVEL_0, px, 33, pz, towards, 0);
+		waitForDimension(context, ModDimensions.LEVEL_0);
+		connection.waitForChunksRender();
+		server.runCommand("gamemode survival @a");
+
+		// --- Fixture: frozen while watched, creeps closer when not, attacks on contact
+		server.runCommand("execute in backrooms:level_0 run summon backrooms:fixture " + (px + 10) + " 33 " + pz + " {Tags:[\"brtest\"]}");
+		context.waitTicks(15);
+		Vec3 p0 = tagged(server, "brtest");
+		context.waitTicks(60);
+		Vec3 p1 = tagged(server, "brtest");
+		boolean flagged = server.computeOnServer(s -> ((FixtureEntity) entity(s, "brtest")).isWatched());
+		check(flagged && p0.distanceTo(p1) < 0.05, mode + ": Fixture stayed frozen for 3s while the player looked at it (moved " + fmt(p0.distanceTo(p1)) + " blocks)");
+		shot(context, mode + "_fixture_watched_far");
+		teleport(server, ModDimensions.LEVEL_0, px, 33, pz, away, 0);
+		context.waitTicks(50);
+		Vec3 p2 = tagged(server, "brtest");
+		check(p1.x - p2.x > 1.5, mode + ": Fixture crept " + fmt(p1.x - p2.x) + " blocks towards the player in 2.5s while they looked away");
+		teleport(server, ModDimensions.LEVEL_0, px, 33, pz, towards, 0);
+		context.waitTicks(6);
+		Vec3 p3 = tagged(server, "brtest");
+		context.waitTicks(40);
+		Vec3 p4 = tagged(server, "brtest");
+		check(p3.distanceTo(p4) < 0.05, mode + ": Fixture froze again the moment the player looked back (moved " + fmt(p3.distanceTo(p4)) + " blocks)");
+		shot(context, mode + "_fixture_watched_closer");
+		teleport(server, ModDimensions.LEVEL_0, px, 33, pz, away, 0);
+		context.waitFor(mc -> mc.player != null && mc.player.getHealth() < 20.0F, 400);
+		float hurt = context.computeOnClient(mc -> mc.player.getHealth());
+		check(hurt < 20.0F, mode + ": Fixture reached the player and attacked (health now " + hurt + ")");
+		server.runCommand("gamemode creative @a");
+		teleport(server, ModDimensions.LEVEL_0, px, 33, pz, towards, 0);
+		context.waitTicks(10);
+		shot(context, mode + "_fixture_point_blank");
+		context.waitFor(mc -> HEARD.contains("backrooms:entity.fixture.ambient"), 800);
+		server.runCommand("damage @e[tag=brtest,limit=1] 4");
+		context.waitTicks(20);
+		server.runCommand("kill @e[tag=brtest]");
+		context.waitTicks(30);
+		heard("backrooms:entity.fixture.step", "backrooms:entity.fixture.attack", "backrooms:entity.fixture.ambient", "backrooms:entity.fixture.hurt", "backrooms:entity.fixture.death");
+
+		// --- Tube Moth: flies about ignoring the player, retaliates only when hit
+		server.runCommand("gamemode survival @a");
+		server.runCommand("effect give @a minecraft:instant_health 1 4");
+		server.runCommand("execute in backrooms:level_0 run summon backrooms:tube_moth " + (px + 4) + " 34.5 " + pz + " {Tags:[\"brmoth\"]}");
+		context.waitTicks(10);
+		double travelled = 0;
+		double highest = 0;
+		Vec3 last = tagged(server, "brmoth");
+		for (int i = 0; i < 12; i++) {
+			context.waitTicks(10);
+			Vec3 now = tagged(server, "brmoth");
+			travelled += now.distanceTo(last);
+			highest = Math.max(highest, now.y);
+			last = now;
+		}
+		boolean passive = server.computeOnServer(s -> ((Mob) entity(s, "brmoth")).getTarget() == null);
+		float before = context.computeOnClient(mc -> mc.player.getHealth());
+		check(travelled > 2.0 && highest > 33.6, mode + ": Tube Moth flew " + fmt(travelled) + " blocks in 6s, up to y=" + fmt(highest));
+		check(passive && before >= 20.0F, mode + ": Tube Moth ignored the player while left alone (no target, player health " + before + ")");
+		lookAt(server, last.add(0, 0.15, 0));
+		context.waitTicks(4);
+		shot(context, mode + "_tube_moth");
+		context.waitFor(mc -> HEARD.contains("backrooms:entity.tube_moth.ambient"), 600);
+		server.runCommand("execute as @a run damage @e[tag=brmoth,limit=1] 1 minecraft:player_attack by @s");
+		context.waitTicks(10);
+		boolean angry = server.computeOnServer(s -> ((Mob) entity(s, "brmoth")).getTarget() instanceof Player);
+		check(angry, mode + ": Tube Moth targeted the player after being hit");
+		context.waitFor(mc -> mc.player != null && mc.player.getHealth() < before, 400);
+		pass(mode + ": the angry Tube Moth bit the player (health now " + context.computeOnClient(mc -> mc.player.getHealth()) + ")");
+		server.runCommand("gamemode creative @a");
+		server.runCommand("kill @e[tag=brmoth]");
+		context.waitTicks(30);
+		heard("backrooms:entity.tube_moth.ambient", "backrooms:entity.tube_moth.hurt", "backrooms:entity.tube_moth.death");
+
+		// --- Spawn rules + config: natural spawning in the level, then the toggles
+		BackroomsConfig config = BackroomsConfig.get();
+		double fixtureRate = config.fixtureSpawnRate;
+		server.runOnServer(s -> config.fixtureSpawnRate = 1.0);
+		// The game test world starts with mob spawning off. Vanilla only refreshes its cached "spawn monsters"
+		// flag when spawn_monsters itself changes, so flip that rule after enabling spawn_mobs.
+		server.runCommand("gamerule spawn_mobs true");
+		server.runCommand("gamerule spawn_monsters false");
+		server.runCommand("gamerule spawn_monsters true");
+		int[] spawned = new int[2];
+		for (int i = 0; i < 90 && (spawned[0] == 0 || spawned[1] == 0); i++) {
+			context.waitTicks(20);
+			spawned = server.computeOnServer(s -> countNatural(s.getLevel(ModDimensions.LEVEL_0)));
+		}
+		check(spawned[0] > 0 && spawned[1] > 0, mode + ": natural spawning in Level 0 produced " + spawned[0] + " Fixture(s) and " + spawned[1] + " Tube Moth(s)");
+		server.runOnServer(s -> {
+			config.fixtureEnabled = false;
+			config.tubeMothEnabled = false;
+		});
+		context.waitTicks(10);
+		int[] afterToggle = server.computeOnServer(s -> countNatural(s.getLevel(ModDimensions.LEVEL_0)));
+		check(afterToggle[0] == 0 && afterToggle[1] == 0, mode + ": config toggles removed every Fixture and Tube Moth and stopped new spawns");
+		server.runOnServer(s -> {
+			config.fixtureEnabled = true;
+			config.tubeMothEnabled = true;
+			config.fixtureSpawnRate = fixtureRate;
+		});
+		server.runCommand("gamerule spawn_mobs false");
+		server.runCommand("kill @e[type=!minecraft:player]");
+		teleport(server, Level.OVERWORLD, 0.5, server.computeOnServer(s -> s.overworld().getHeight(Heightmap.Types.MOTION_BLOCKING, 0, 0)), 0.5, 0, 0);
+		waitForDimension(context, Level.OVERWORLD);
+	}
+
+	private static int[] countNatural(ServerLevel level) {
+		return new int[]{
+			level.getEntities(EntityTypeTest.forClass(FixtureEntity.class), e -> e.isAlive()).size(),
+			level.getEntities(EntityTypeTest.forClass(TubeMothEntity.class), e -> e.isAlive()).size()};
+	}
+
+	/** A straight, obstacle-free strip of Level 0 running +X, three blocks wide. */
+	private static BlockPos findCorridor(Layout layout, int length) {
+		for (int x = -200; x < 200; x++) {
+			for (int z = -200; z < 200; z++) {
+				boolean clear = true;
+				for (int dx = -1; dx <= length && clear; dx++) {
+					for (int dz = -1; dz <= 1 && clear; dz++) {
+						clear = layout.canStandAt(x + dx, z + dz);
+					}
+				}
+				if (clear) {
+					return new BlockPos(x, Layout.FLOOR_Y + 1, z);
+				}
+			}
+		}
+		throw new AssertionError("no open corridor found");
+	}
+
+	static Entity entity(net.minecraft.server.MinecraftServer server, String tag) {
+		for (ServerLevel level : server.getAllLevels()) {
+			for (Entity entity : level.getAllEntities()) {
+				if (entity.entityTags().contains(tag)) {
+					return entity;
+				}
+			}
+		}
+		throw new AssertionError("no entity tagged " + tag);
+	}
+
+	static Vec3 tagged(TestServerContext server, String tag) {
+		return server.computeOnServer(s -> entity(s, tag).position());
+	}
+
+	/** Turn the player on the spot to face a point. */
+	static void lookAt(TestServerContext server, Vec3 target) {
+		server.runCommand("execute as @a at @s run tp @s ~ ~ ~ facing " + target.x + " " + target.y + " " + target.z);
+	}
+
+	static String fmt(double value) {
+		return String.format(java.util.Locale.ROOT, "%.2f", value);
 	}
 
 	/** Teleport next to the level's nearest exit, wait out the arrival cooldown, and walk into the threshold. */

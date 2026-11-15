@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
 
 public final class ModItems {
@@ -31,6 +32,9 @@ public final class ModItems {
 	/** The glint is the tell: an ordinary-looking key fob that shimmers like something enchanted. */
 	public static final Item KEY_FOB = register("key_fob", KeyFobItem::new,
 		new Item.Properties().stacksTo(1).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true));
+
+	public static final Item FIXTURE_SPAWN_EGG = register("fixture_spawn_egg", SpawnEggItem::new, new Item.Properties().spawnEgg(ModEntities.FIXTURE));
+	public static final Item TUBE_MOTH_SPAWN_EGG = register("tube_moth_spawn_egg", SpawnEggItem::new, new Item.Properties().spawnEgg(ModEntities.TUBE_MOTH));
 
 	static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Backrooms.id(name));

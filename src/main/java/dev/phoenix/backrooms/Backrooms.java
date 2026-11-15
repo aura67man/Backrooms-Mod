@@ -2,6 +2,7 @@ package dev.phoenix.backrooms;
 
 import dev.phoenix.backrooms.registry.ModBlocks;
 import dev.phoenix.backrooms.registry.ModDimensions;
+import dev.phoenix.backrooms.registry.ModEntities;
 import dev.phoenix.backrooms.registry.ModItems;
 import dev.phoenix.backrooms.registry.ModSounds;
 import dev.phoenix.backrooms.transit.NoclipHandler;
@@ -25,6 +26,7 @@ public class Backrooms implements ModInitializer {
 		BackroomsConfig.load();
 		ModSounds.init();
 		ModBlocks.init();
+		ModEntities.init();
 		ModItems.init();
 		ModDimensions.init();
 		Transit.init();

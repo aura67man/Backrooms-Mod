@@ -6,9 +6,11 @@
 	"description": "Three original liminal dimensions, four ways in, and two things that live there.",
 	"authors": ["Phoenix"],
 	"license": "MIT",
+	"icon": "assets/backrooms/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.phoenix.backrooms.Backrooms"]
+		"main": ["dev.phoenix.backrooms.Backrooms"],
+		"client": ["dev.phoenix.backrooms.client.BackroomsClient"]
 	},
 	"depends": {
 		"fabricloader": ">=0.20.0",
