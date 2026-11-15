@@ -5,7 +5,7 @@
 	"name": "Backrooms: Thresholds",
 	"description": "Three original liminal dimensions, four ways in, and two things that live there.",
 	"authors": ["Phoenix"],
-	"license": "MIT",
+	"license": "All-Rights-Reserved",
 	"icon": "assets/backrooms/icon.png",
 	"environment": "*",
 	"entrypoints": {

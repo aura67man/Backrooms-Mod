@@ -54,6 +54,7 @@ public final class NoclipHandler {
 				// forced + always-visible so the tell still shows on "minimal" particle settings
 				level.sendParticles(ParticleTypes.ELECTRIC_SPARK, true, true, at.x, at.y, at.z, 8, 0.45, 0.45, 0.45, 0.05);
 				level.sendParticles(ParticleTypes.WHITE_ASH, true, true, at.x, at.y, at.z, 10, 0.5, 0.5, 0.5, 0.0);
+				level.sendParticles(ParticleTypes.END_ROD, true, true, at.x, at.y, at.z, 2, 0.4, 0.4, 0.4, 0.01);
 			}
 			if ((state.ticks - TELL_AFTER_TICKS) % 50 == 0) {
 				level.playSound(null, at.x, at.y, at.z, ModSounds.NOCLIP_HUM, SoundSource.AMBIENT, 0.9F, 1.0F);
